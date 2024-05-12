@@ -13,8 +13,6 @@ class Comment;
 class Activity
 {
     static const int notypes = 4;
-    static const int nosubtypes = 3;
-
     static const char *types[notypes];
     int typeno;
     char *value;
