@@ -131,7 +131,7 @@ void Base::ViewTimeline()
 }
 
 void Base::PrintDetails()
-{ // print
+{
     cout << id;
     cout << " : ";
     PrintName();
@@ -168,7 +168,7 @@ User::User(ifstream &myfile, char **friends, int &numfriends, char **likedPages,
 }
 
 void User::LoadData(ifstream &myfile, char **friends, int &numfriends, char **likedPages, int &numlikedPages)
-{
+{ // taking data from file
     char temp[100];
     myfile >> temp;
 
@@ -376,7 +376,7 @@ void User::PrintFriendList()
 }
 
 void User::PrintLikedPagesList()
-{
+{ // print only
     PrintName();
 
     cout << " || Liked Pages ||" << endl
@@ -419,6 +419,7 @@ Page::Page(ifstream &myfile) : Base(myfile), title(nullptr), nolikers(0), likers
         }
     }
 }
+
 Page::~Page()
 {
     if (title)

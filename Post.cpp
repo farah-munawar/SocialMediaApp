@@ -13,19 +13,17 @@ class User;
 class Base;
 Post::Post(const char *id, const char *text, int d, int m, int y, Base *postuser, int typeactivity, char *subtypeactivity)
     : shareDate(d, m, y), id(nullptr), text(nullptr), likers(nullptr), noOfLikers(0), comments(nullptr), noOfComments(0), theuser(postuser), activity(nullptr)
-{
+{ // constructor
     if (id)
     {
         this->id = new char[strlen(id) + 1];
         strcpy(this->id, id);
     }
-
     if (text)
     {
         this->text = new char[strlen(text) + 1];
         strcpy(this->text, text);
     }
-
     if (typeactivity != -1 && subtypeactivity)
     {
         activity = new Activity(typeactivity, subtypeactivity);
@@ -59,7 +57,7 @@ Post::Post(ifstream &myfile, char *theuser, char **likersList, int &numlikes)
 }
 
 void Post::LoadData(ifstream &myfile, char *theuser, char **likersList, int &numlikes)
-{
+{ // taking data from file
     int size = 0, type = 0;
     char temp[100];
 
@@ -139,8 +137,9 @@ Date Post::getpostdate()
 {
     return shareDate;
 }
+
 void Post::Print(bool printDate, bool Com)
-{
+{ // print
     cout << "--- ";
     theuser->PrintName();
 
@@ -270,13 +269,7 @@ void Post::PrintLikedList()
     for (int i = 0; i < noOfLikers; i++)
         likers[i]->PrintDetails();
 }
-// d,m,y
-Memory::Memory(const char *id, const char *text, int d, int m, int y, Base *postuser, Post *original)
-    : Post(id, text, d, m, y, postuser)
-{
-    originalPost = original;
-}
-// date
+
 Memory::Memory(const char *id, const char *text, const Date &currDate, Base *postuser, Post *original)
     : Post(id, text, currDate, postuser)
 {
@@ -368,30 +361,27 @@ Activity::~Activity()
 }
 
 void Activity::Print()
-{
+{ // print
     if (typeno != -1 && subtype)
         cout << " is " << types[typeno] << ' ' << subtype << endl;
 }
 
 Comment::Comment(const char *id, const char *body, Base *theuser)
+    : id(nullptr), text(nullptr), postuser(theuser)
 {
-    if (id)
+    // Allocating id
+    if (id && strlen(id) > 0)
     {
         this->id = new char[strlen(id) + 1];
         strcpy(this->id, id);
     }
-    else
-        this->id = nullptr;
 
-    if (body)
+    // Allocating text
+    if (body && strlen(body) > 0)
     {
         text = new char[strlen(body) + 1];
         strcpy(text, body);
     }
-    else
-        text = nullptr;
-
-    postuser = theuser;
 }
 
 Comment::Comment(ifstream &myfile, char *postID, char *theuser)
