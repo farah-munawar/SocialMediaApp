@@ -406,23 +406,19 @@ Page::Page(const char *id, const char *title) : Base(id)
     likers = nullptr;
 }
 
-Page::Page(ifstream &myfile) : Base(myfile)
+Page::Page(ifstream &myfile) : Base(myfile), title(nullptr), nolikers(0), likers(nullptr)
 {
     char temp[100];
-    myfile.getline(temp, 100, '\n');
-
-    int size = strlen(temp);
-
-    if (size > 0)
+    if (myfile.getline(temp, 100))
     {
-        title = new char[size + 1];
-        strcpy(title, temp);
+        int size = strlen(temp);
+        if (size > 0)
+        {
+            title = new char[size + 1];
+            strcpy(title, temp);
+        }
     }
-
-    nolikers = 0;
-    likers = nullptr;
 }
-
 Page::~Page()
 {
     if (title)
@@ -442,7 +438,7 @@ bool Page::AddLiker(Base *user)
     {
         return false;
     }
-
+    // memory allocation
     if (!likers)
     {
         likers = new Base *[maxLikers];
@@ -452,7 +448,7 @@ bool Page::AddLiker(Base *user)
     {
         return false;
     }
-
+    // add user to the like list
     likers[nolikers++] = user;
     return true;
 }
