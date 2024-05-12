@@ -3,7 +3,7 @@
 
 using namespace std;
 Date::Date() {}
-Date Date::today = Date();
+// Date Date::today = Date();
 void Date::settodaysdate(int d, int m, int y)
 {
     today.date = d;
@@ -34,36 +34,52 @@ void Date::LoadData(ifstream &myfile)
 bool Date::operator<=(const Date &D)
 {
     if (year != D.year)
+    {
         return year < D.year;
+    }
     if (month != D.month)
+    {
         return month < D.month;
+    }
     return date <= D.date;
 }
 
 bool Date::operator<(const Date &D)
 {
     if (year != D.year)
+    {
         return year < D.year;
+    }
     if (month != D.month)
+    {
         return month < D.month;
+    }
     return date < D.date;
 }
 
 bool Date::operator>=(const Date &D)
 {
     if (year != D.year)
+    {
         return year > D.year;
+    }
     if (month != D.month)
+    {
         return month > D.month;
+    }
     return date >= D.date;
 }
 
 bool Date::operator>(const Date &D)
 {
     if (year != D.year)
+    {
         return year > D.year;
+    }
     if (month != D.month)
+    {
         return month > D.month;
+    }
     return date > D.date;
 }
 
