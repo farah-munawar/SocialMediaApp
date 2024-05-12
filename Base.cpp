@@ -167,8 +167,7 @@ User::User(ifstream &myfile, char **friends, int &numfriends, char **likedPages,
     LoadData(myfile, friends, numfriends, likedPages, numlikedPages);
 }
 
-void User::LoadData(ifstream &myfile, char **friends, int &numfriends,
-                    char **likedPages, int &numlikedPages)
+void User::LoadData(ifstream &myfile, char **friends, int &numfriends, char **likedPages, int &numlikedPages)
 {
     char temp[100];
     myfile >> temp;
@@ -197,7 +196,7 @@ void User::LoadData(ifstream &myfile, char **friends, int &numfriends,
         lName = nullptr;
     }
 
-    // now friends will be added
+    // friends added
     numfriends = 0;
     while (numfriends < maxFriends)
     {
@@ -212,7 +211,7 @@ void User::LoadData(ifstream &myfile, char **friends, int &numfriends,
         }
     }
 
-    // now add pages
+    // add pages
 
     numlikedPages = 0;
     while (numlikedPages < maxlikedpages)
@@ -328,21 +327,38 @@ void User::ViewHome()
 
     cout << " || Home Page ||" << endl
          << endl;
+
+    // display latest post from each friend
     for (int i = 0; i < nofriends; i++)
     {
-        Post *latestPost = friends[i]->GetLatestPost();
-        if (latestPost)
-        {
-            latestPost->Print();
+        if (friends[i])
+        { // Check
+            Post *latestPost = friends[i]->GetLatestPost();
+            if (latestPost)
+            {
+                latestPost->Print();
+            }
+            else
+            {
+                cout << "No recent posts from friend " << i + 1 << "." << endl;
+            }
         }
     }
 
+    // display latest post from each liked page
     for (int i = 0; i < nolikedpages; i++)
     {
-        Post *latestPost = likedPages[i]->GetLatestPost();
-        if (latestPost)
-        {
-            latestPost->Print();
+        if (likedPages[i])
+        { // Check
+            Post *latestPost = likedPages[i]->GetLatestPost();
+            if (latestPost)
+            {
+                latestPost->Print();
+            }
+            else
+            {
+                cout << "No recent posts from liked page " << i + 1 << "." << endl;
+            }
         }
     }
 }
