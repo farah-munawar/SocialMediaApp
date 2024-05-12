@@ -25,7 +25,7 @@ public:
     Base(ifstream &);
     virtual ~Base();
     bool AddPost(Post *);
-    Post *GetLatestPost();
+    Post *getlatestpost();
     const char *getUserID();
     void ViewTimeline();
     void PrintMemories();

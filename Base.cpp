@@ -7,6 +7,7 @@
 
 class Post;
 class User;
+// constructor
 Base::Base(const char *userId) : id(nullptr), timeline(nullptr), noPosts(0)
 {
     if (userId)
@@ -15,7 +16,7 @@ Base::Base(const char *userId) : id(nullptr), timeline(nullptr), noPosts(0)
         strcpy(id, userId);
     }
 }
-
+// constructor
 Base::Base(ifstream &myfile) : id(nullptr), timeline(nullptr), noPosts(0)
 {
     char temp[10];
@@ -48,7 +49,7 @@ Base::~Base()
 bool Base::AddPost(Post *p)
 {
     if (!timeline) // check
-    {
+    {              // memory allocation
         timeline = new Post *[maxPosts];
         for (int i = 0; i < maxPosts; i++)
         {
@@ -65,12 +66,11 @@ bool Base::AddPost(Post *p)
     // adjusting dates avaible(old to latest)
     for (i = 0; i < noPosts; i++)
     {
-        if (timeline[i]->getpostdate() > p->getpostdate())
+        if (timeline[i]->getpostdate() >= p->getpostdate())
             break;
     }
 
     // move posts down to make space for the new post
-
     for (int j = noPosts; j > i; j--)
     {
         timeline[j] = timeline[j - 1];
@@ -81,7 +81,7 @@ bool Base::AddPost(Post *p)
 }
 
 // returning the lastest post
-Post *Base::GetLatestPost()
+Post *Base::getlatestpost()
 {
     if (noPosts <= 0)
     {
@@ -333,7 +333,7 @@ void User::ViewHome()
     {
         if (friends[i])
         { // Check
-            Post *latestPost = friends[i]->GetLatestPost();
+            Post *latestPost = friends[i]->getlatestpost();
             if (latestPost)
             {
                 latestPost->Print();
@@ -350,7 +350,7 @@ void User::ViewHome()
     {
         if (likedPages[i])
         { // Check
-            Post *latestPost = likedPages[i]->GetLatestPost();
+            Post *latestPost = likedPages[i]->getlatestpost();
             if (latestPost)
             {
                 latestPost->Print();
