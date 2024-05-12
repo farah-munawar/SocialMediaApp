@@ -3,7 +3,7 @@
 
 using namespace std;
 Date::Date() {}
-// Date Date::today = Date();
+Date Date::today = Date();
 void Date::settodaysdate(int d, int m, int y)
 {
     today.date = d;

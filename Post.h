@@ -61,7 +61,7 @@ class Post
 protected:
     void PrintComments();
     void PrintText();
-    Base *owner;
+    Base *theuser;
 
 public:
     Post(const char *, const char *, int, int, int, Base *, int = -1, char * = nullptr);
@@ -73,8 +73,8 @@ public:
     bool AddLiker(Base *);
     bool AddComment(Comment *);
     virtual void Print(bool = false, bool = true);
-    void SetOwner(Base *);
-    const Base *getOwner();
+    void SetUser(Base *);
+    const Base *getuser();
     const char *getID();
     void PrintLikedList();
 };

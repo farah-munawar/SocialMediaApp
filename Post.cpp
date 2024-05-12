@@ -11,85 +11,54 @@ class SocialMediaApp;
 class Date;
 class User;
 class Base;
-Post::Post(const char *id, const char *text, int d, int m, int y, Base *postuser, int typeactivity, char *subtypeactivity) : shareDate(d, m, y)
+Post::Post(const char *id, const char *text, int d, int m, int y, Base *postuser, int typeactivity, char *subtypeactivity)
+    : shareDate(d, m, y), id(nullptr), text(nullptr), likers(nullptr), noOfLikers(0), comments(nullptr), noOfComments(0), theuser(postuser), activity(nullptr)
 {
     if (id)
     {
         this->id = new char[strlen(id) + 1];
         strcpy(this->id, id);
     }
-    else
-        this->id = nullptr;
 
     if (text)
     {
         this->text = new char[strlen(text) + 1];
         strcpy(this->text, text);
     }
-    else
-        this->text = nullptr;
-
-    likers = nullptr;
-    noOfLikers = 0;
-
-    comments = nullptr;
-    noOfComments = 0;
-
-    owner = postuser;
 
     if (typeactivity != -1 && subtypeactivity)
+    {
         activity = new Activity(typeactivity, subtypeactivity);
-    else
-        activity = nullptr;
+    }
 }
 
-Post::Post(const char *id, const char *text, const Date &d, Base *postuser, int typeactivity, char *subtypeactivity) : shareDate(d)
+Post::Post(const char *id, const char *text, const Date &d, Base *postuser, int typeactivity, char *subtypeactivity)
+    : shareDate(d), id(nullptr), text(nullptr), likers(nullptr), noOfLikers(0), comments(nullptr), noOfComments(0), theuser(postuser), activity(nullptr)
 {
+    // memory allocation
     if (id)
     {
         this->id = new char[strlen(id) + 1];
         strcpy(this->id, id);
     }
-    else
-        this->id = nullptr;
-
     if (text)
     {
         this->text = new char[strlen(text) + 1];
         strcpy(this->text, text);
     }
-    else
-        this->text = nullptr;
-
-    likers = nullptr;
-
-    noOfLikers = 0;
-
-    comments = nullptr;
-    noOfComments = 0;
-
-    owner = postuser;
-
     if (typeactivity != -1 && subtypeactivity)
+    {
         activity = new Activity(typeactivity, subtypeactivity);
-    else
-        activity = nullptr;
+    }
 }
 
-Post::Post(ifstream &myfile, char *owner, char **likersList, int &numlikes)
+Post::Post(ifstream &myfile, char *theuser, char **likersList, int &numlikes)
+    : likers(nullptr), noOfLikers(0), comments(nullptr), noOfComments(0), theuser(nullptr)
 {
-    likers = nullptr;
-    noOfLikers = 0;
-
-    comments = nullptr;
-    noOfComments = 0;
-
-    this->owner = nullptr;
-
-    LoadData(myfile, owner, likersList, numlikes);
+    LoadData(myfile, theuser, likersList, numlikes);
 }
 
-void Post::LoadData(ifstream &myfile, char *owner, char **likersList, int &numlikes)
+void Post::LoadData(ifstream &myfile, char *theuser, char **likersList, int &numlikes)
 {
     int size = 0, type = 0;
     char temp[100];
@@ -126,7 +95,7 @@ void Post::LoadData(ifstream &myfile, char *owner, char **likersList, int &numli
     else
         activity = nullptr;
 
-    myfile >> owner;
+    myfile >> theuser;
 
     numlikes = 0;
     while (numlikes < maxLikers)
@@ -173,7 +142,7 @@ Date Post::getpostdate()
 void Post::Print(bool printDate, bool Com)
 {
     cout << "--- ";
-    owner->PrintName();
+    theuser->PrintName();
 
     if (activity)
     {
@@ -201,22 +170,30 @@ void Post::Print(bool printDate, bool Com)
 }
 bool Post::AddLiker(Base *user)
 {
+    // check
     if (!user)
         return false;
 
+    // memory allocation
     if (!likers)
     {
         likers = new Base *[maxLikers];
         for (int i = 0; i < maxLikers; i++)
             likers[i] = nullptr;
     }
+    // check if the user is already in the likers array
 
+    for (int i = 0; i < noOfLikers; i++)
+    {
+        if (likers[i] == user) // user already liked the post
+        {
+            return false;
+        }
+    }
+
+    // adding the user to the likers array
     if (noOfLikers < maxLikers)
     {
-        for (int i = 0; i < noOfLikers; i++)
-            if (likers[i] == user)
-                return true;
-
         likers[noOfLikers++] = user;
         return true;
     }
@@ -227,15 +204,18 @@ bool Post::AddLiker(Base *user)
 bool Post::AddComment(Comment *com)
 {
     if (!com)
+    {
         return false;
+    }
 
     if (!comments)
-    {
+    { // memory allocation
         comments = new Comment *[maxComments];
         for (int i = 0; i < maxComments; i++)
             comments[i] = nullptr;
     }
 
+    // add comment
     if (noOfComments < maxComments)
     {
         comments[noOfComments++] = com;
@@ -267,14 +247,14 @@ void Post::PrintComments()
     cout << endl;
 }
 
-void Post::SetOwner(Base *user)
+void Post::SetUser(Base *user)
 {
-    owner = user;
+    theuser = user;
 }
 
-const Base *Post::getOwner()
+const Base *Post::getuser()
 {
-    return owner;
+    return theuser;
 }
 
 const char *Post::getID()
@@ -284,21 +264,21 @@ const char *Post::getID()
 
 void Post::PrintLikedList()
 {
-    cout << std::endl;
+    cout << endl;
 
     cout << "Post Liked By:" << endl;
     for (int i = 0; i < noOfLikers; i++)
         likers[i]->PrintDetails();
 }
-
-Memory::Memory(const char *id, const char *text, int d, int m, int y, Base *author, Post *original)
-    : Post(id, text, d, m, y, author)
+// d,m,y
+Memory::Memory(const char *id, const char *text, int d, int m, int y, Base *postuser, Post *original)
+    : Post(id, text, d, m, y, postuser)
 {
     originalPost = original;
 }
-
-Memory::Memory(const char *id, const char *text, const Date &currDate, Base *author, Post *original)
-    : Post(id, text, currDate, author)
+// date
+Memory::Memory(const char *id, const char *text, const Date &currDate, Base *postuser, Post *original)
+    : Post(id, text, currDate, postuser)
 {
     originalPost = original;
 }
@@ -307,22 +287,25 @@ void Memory::Print(bool printDate = true, bool com = true)
 {
 
     cout << "~~~ ";
-    owner->PrintName();
+    theuser->PrintName();
 
-    cout << " shared a memory ~~~ ...";
+    cout << " shared a memory ~~~ .....";
 
+    // print date
     if (printDate)
+    {
         Post::getpostdate().Print();
+    }
 
     cout << endl;
 
     Post::PrintText();
 
-    cout << endl;
-    cout << '\t' << '\t' << '(';
-    cout << Date::gettodaysdate().getYear() - originalPost->getpostdate().getYear();
-    cout << " Years Ago)" << '\n';
-
+    if (printDate)
+    {
+        cout << endl;
+        cout << '\t' << '\t' << '(' << Date::gettodaysdate().getYear() - originalPost->getpostdate().getYear() << " Years Ago)" << '\n';
+    }
     originalPost->Print(true, false);
 
     if (com)
@@ -390,7 +373,7 @@ void Activity::Print()
         cout << " is " << types[typeno] << ' ' << subtype << endl;
 }
 
-Comment::Comment(const char *id, const char *body, Base *owner)
+Comment::Comment(const char *id, const char *body, Base *theuser)
 {
     if (id)
     {
@@ -408,10 +391,10 @@ Comment::Comment(const char *id, const char *body, Base *owner)
     else
         text = nullptr;
 
-    postuser = owner;
+    postuser = theuser;
 }
 
-Comment::Comment(ifstream &myfile, char *postID, char *owner)
+Comment::Comment(ifstream &myfile, char *postID, char *theuser)
 {
     char temp[100];
     int size = 0;
@@ -430,7 +413,7 @@ Comment::Comment(ifstream &myfile, char *postID, char *owner)
 
     myfile >> postID;
 
-    myfile >> owner;
+    myfile >> theuser;
 
     myfile.ignore();
     myfile.getline(temp, 100, '\n');

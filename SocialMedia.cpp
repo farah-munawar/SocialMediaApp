@@ -206,7 +206,7 @@ void SocialMediaApp::LoadPosts(ifstream &myfile)
         if (owner)
         {
             owner->AddPost(posts[i]);
-            posts[i]->SetOwner(owner);
+            posts[i]->SetUser(owner);
 
             for (int j = 0; j < noOfLikes; j++)
             {
@@ -495,7 +495,7 @@ bool SocialMediaApp::ShareMemory(const char *postID, const char *body)
 
     Post *post = getPostByID(postID);
 
-    if (post && post->getOwner() == currentuser)
+    if (post && post->getuser() == currentuser)
     {
         Memory *newPost = new Memory(("post" + to_string(noposts + 1)).c_str(), body, Date::gettodaysdate(), currentuser, post);
         bool status = currentuser->AddPost(newPost);
