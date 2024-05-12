@@ -11,31 +11,13 @@ class SocialMediaApp;
 class Date;
 class User;
 class Base;
-Post::Post(const char *id, const char *text, int d, int m, int y, Base *postuser, int typeactivity, char *subtypeactivity)
-    : shareDate(d, m, y), id(nullptr), text(nullptr), likers(nullptr), noOfLikers(0), comments(nullptr), noOfComments(0), theuser(postuser), activity(nullptr)
-{ // constructor
-    if (id)
-    {
-        this->id = new char[strlen(id) + 1];
-        strcpy(this->id, id);
-    }
-    if (text)
-    {
-        this->text = new char[strlen(text) + 1];
-        strcpy(this->text, text);
-    }
-    if (typeactivity != -1 && subtypeactivity)
-    {
-        activity = new Activity(typeactivity, subtypeactivity);
-    }
-}
 
 Post::Post(const char *id, const char *text, const Date &d, Base *postuser, int typeactivity, char *subtypeactivity)
     : shareDate(d), id(nullptr), text(nullptr), likers(nullptr), noOfLikers(0), comments(nullptr), noOfComments(0), theuser(postuser), activity(nullptr)
-{
-    // memory allocation
+{ // memory
+
     if (id)
-    {
+    { // memory allocation
         this->id = new char[strlen(id) + 1];
         strcpy(this->id, id);
     }
@@ -44,23 +26,20 @@ Post::Post(const char *id, const char *text, const Date &d, Base *postuser, int 
         this->text = new char[strlen(text) + 1];
         strcpy(this->text, text);
     }
-    if (typeactivity != -1 && subtypeactivity)
-    {
-        activity = new Activity(typeactivity, subtypeactivity);
-    }
+    
 }
 
 Post::Post(ifstream &myfile, char *theuser, char **likersList, int &numlikes)
     : likers(nullptr), noOfLikers(0), comments(nullptr), noOfComments(0), theuser(nullptr)
-{
+{ // constructor
     LoadData(myfile, theuser, likersList, numlikes);
 }
 
 void Post::LoadData(ifstream &myfile, char *theuser, char **likersList, int &numlikes)
 { // taking data from file
-    int size = 0, type = 0;
-    char temp[100];
 
+    char temp[100];
+    int size = 0, type = 0;
     myfile >> type;
     myfile >> temp;
 
@@ -251,12 +230,12 @@ void Post::SetUser(Base *user)
     theuser = user;
 }
 
-const Base *Post::getuser()
+Base *Post::getuser()
 {
     return theuser;
 }
 
-const char *Post::getID()
+char *Post::getID()
 {
     return id;
 }
@@ -282,7 +261,7 @@ void Memory::Print(bool printDate = true, bool com = true)
     cout << "~~~ ";
     theuser->PrintName();
 
-    cout << " shared a memory ~~~ .....";
+    cout << " shared a memory ~~~ ...";
 
     // print date
     if (printDate)
@@ -304,29 +283,14 @@ void Memory::Print(bool printDate = true, bool com = true)
     if (com)
         Post::PrintComments();
 }
+
 const char *Activity::types[notypes] = {
     "feeling",
     "thinking about",
     "making",
     "celebrating"};
 
-Activity::Activity(int type, const char *subtype) : typeno(type - 1)
-{
-    if (typeno < 0 || typeno >= notypes)
-    {
-        typeno = -1;
-        return;
-    }
 
-    int size = strlen(subtype);
-    if (size > 0)
-    {
-        this->subtype = new char[size + 1];
-        strcpy(this->subtype, subtype);
-    }
-    else
-        subtype = nullptr;
-}
 
 Activity::Activity(ifstream &myfile)
 {
@@ -347,23 +311,23 @@ Activity::Activity(ifstream &myfile)
     int size = strlen(temp);
     if (size > 0)
     {
-        subtype = new char[size + 1];
-        strcpy(subtype, temp);
+        value = new char[size + 1];
+        strcpy(value, temp);
     }
     else
-        subtype = nullptr;
+        value = nullptr;
 }
 
 Activity::~Activity()
 {
-    if (subtype)
-        delete[] subtype;
+    if (value)
+        delete[] value;
 }
 
 void Activity::Print()
 { // print
-    if (typeno != -1 && subtype)
-        cout << " is " << types[typeno] << ' ' << subtype << endl;
+    if (typeno != -1 && value)
+        cout << " is " << types[typeno] << ' ' << value << endl;
 }
 
 Comment::Comment(const char *id, const char *body, Base *theuser)
@@ -384,7 +348,7 @@ Comment::Comment(const char *id, const char *body, Base *theuser)
     }
 }
 
-Comment::Comment(ifstream &myfile, char *postID, char *theuser)
+Comment::Comment(ifstream &myfile, char *postID, char *theuser) : id(nullptr), text(nullptr)
 {
     char temp[100];
     int size = 0;
@@ -398,13 +362,9 @@ Comment::Comment(ifstream &myfile, char *postID, char *theuser)
         id = new char[size + 1];
         strcpy(id, temp);
     }
-    else
-        id = nullptr;
 
     myfile >> postID;
-
     myfile >> theuser;
-
     myfile.ignore();
     myfile.getline(temp, 100, '\n');
     size = strlen(temp);
@@ -414,8 +374,6 @@ Comment::Comment(ifstream &myfile, char *postID, char *theuser)
         text = new char[size + 1];
         strcpy(text, temp);
     }
-    else
-        text = nullptr;
 }
 
 Comment::~Comment()

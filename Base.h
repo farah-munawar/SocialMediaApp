@@ -21,7 +21,6 @@ class Base
     int noPosts;
 
 public:
-    Base(const char *);
     Base(ifstream &);
     virtual ~Base();
     bool AddPost(Post *);
@@ -41,7 +40,6 @@ class Page : public Base
     Base **likers;
 
 public:
-    Page(const char *, const char *);
     Page(ifstream &);
     ~Page();
     bool AddLiker(Base *);
@@ -51,8 +49,8 @@ class User : public Base
 {
     char *fName;
     char *lName;
-    static const int maxFriends = 10;
-    static const int maxlikedpages = 10;
+    const int maxFriends = 10;
+    const int maxlikedpages = 10;
 
     Page **likedPages;
     int nolikedpages;

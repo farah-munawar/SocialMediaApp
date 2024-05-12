@@ -7,15 +7,7 @@
 
 class Post;
 class User;
-// constructor
-Base::Base(const char *userId) : id(nullptr), timeline(nullptr), noPosts(0)
-{
-    if (userId)
-    {
-        id = new char[strlen(userId) + 1];
-        strcpy(id, userId);
-    }
-}
+
 // constructor
 Base::Base(ifstream &myfile) : id(nullptr), timeline(nullptr), noPosts(0)
 {
@@ -87,8 +79,7 @@ Post *Base::getlatestpost()
     {
         return nullptr;
     }
-
-    Post *latest = nullptr;
+    Post *temp = nullptr;
     const Date today = Date::gettodaysdate(); // stores today date
 
     for (int i = 0; i < noPosts; i++)
@@ -96,12 +87,12 @@ Post *Base::getlatestpost()
         if (timeline[i]->getpostdate() <= today)
         { // if no latest has been found yet or this post is more recent then update latest
 
-            if (latest == nullptr || latest->getpostdate() < timeline[i]->getpostdate())
-                latest = timeline[i];
+            if (temp == nullptr || temp->getpostdate() < timeline[i]->getpostdate())
+                temp = timeline[i];
         }
     }
 
-    return latest;
+    return temp;
 }
 
 const char *Base::getUserID()
@@ -112,8 +103,7 @@ const char *Base::getUserID()
 void Base::ViewTimeline()
 {
     PrintName();
-    cout << endl;
-    cout << " || Timeline ||";
+    cout << " || Timeline";
     cout << endl
          << endl;
 
@@ -163,7 +153,7 @@ void Base::PrintMemories()
 }
 
 User::User(ifstream &myfile, char **friends, int &numfriends, char **likedPages, int &numlikedPages) : Base(myfile), friends(nullptr), likedPages(nullptr), nofriends(0), nolikedpages(0)
-{
+{ // constructor
     LoadData(myfile, friends, numfriends, likedPages, numlikedPages);
 }
 
@@ -251,13 +241,13 @@ User::~User()
 
 bool User::AddFriend(User *user)
 {
-    if (!user)
+    if (!user) // check
     {
         return false;
     }
 
-    if (!friends)
-    { // memory allocation
+    if (!friends) // check
+    {             // memory allocation
         friends = new User *[maxFriends];
         for (int i = 0; i < maxFriends; i++)
         {
@@ -270,19 +260,18 @@ bool User::AddFriend(User *user)
         friends[nofriends++] = user;
         return true;
     }
-
     return false;
 }
 
 bool User::LikePage(Page *likedPage)
 {
-    if (!likedPage)
+    if (!likedPage) // check
     {
         return false;
     }
 
-    if (!likedPages)
-    { // memory allocation
+    if (!likedPages) // check
+    {                // memory allocation
         likedPages = new Page *[maxlikedpages];
         for (int i = 0; i < maxlikedpages; i++)
         {
@@ -295,7 +284,6 @@ bool User::LikePage(Page *likedPage)
         likedPages[nolikedpages++] = likedPage;
         return true;
     }
-
     return false;
 }
 
@@ -325,7 +313,7 @@ void User::ViewHome()
 {
     PrintName();
 
-    cout << " || Home Page ||" << endl
+    cout << " || Home Page" << endl
          << endl;
 
     // display latest post from each friend
@@ -364,10 +352,10 @@ void User::ViewHome()
 }
 
 void User::PrintFriendList()
-{
+{ // print friend list
     PrintName();
 
-    cout << " || Friends ||" << endl;
+    cout << " || Friends" << endl;
 
     for (int i = 0; i < nofriends; i++)
     {
@@ -376,34 +364,16 @@ void User::PrintFriendList()
 }
 
 void User::PrintLikedPagesList()
-{ // print only
+{ // print liked pages only
     PrintName();
 
-    cout << " || Liked Pages ||" << endl
+    cout << " || Liked Pages" << endl
          << endl;
 
     for (int i = 0; i < nolikedpages; i++)
     {
         likedPages[i]->PrintDetails();
     }
-}
-
-Page::Page(const char *id, const char *title) : Base(id)
-{
-    int size = strlen(title);
-
-    if (size > 0)
-    {
-        title = new char[size + 1];
-        strcpy(this->title, title);
-    }
-    else
-    {
-        this->title = nullptr;
-    }
-
-    nolikers = 0;
-    likers = nullptr;
 }
 
 Page::Page(ifstream &myfile) : Base(myfile), title(nullptr), nolikers(0), likers(nullptr)
@@ -439,13 +409,13 @@ bool Page::AddLiker(Base *user)
     {
         return false;
     }
-    // memory allocation
+
     if (!likers)
-    {
+    { // memory allocation
         likers = new Base *[maxLikers];
     }
 
-    if (nolikers >= maxLikers)
+    if (nolikers >= maxLikers) // check
     {
         return false;
     }

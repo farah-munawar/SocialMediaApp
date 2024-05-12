@@ -17,10 +17,9 @@ class Activity
 
     static const char *types[notypes];
     int typeno;
-    char *subtype;
+    char *value;
 
 public:
-    Activity(int, const char *);
     Activity(ifstream &);
     ~Activity();
     void Print();
@@ -64,7 +63,6 @@ protected:
     Base *theuser;
 
 public:
-    Post(const char *, const char *, int, int, int, Base *, int = -1, char * = nullptr);
     Post(const char *, const char *, const Date &, Base *, int = -1, char * = nullptr);
     Post(ifstream &, char *, char **, int &);
     void LoadData(ifstream &, char *, char **, int &);
@@ -74,8 +72,8 @@ public:
     bool AddComment(Comment *);
     virtual void Print(bool = false, bool = true);
     void SetUser(Base *);
-    const Base *getuser();
-    const char *getID();
+    Base *getuser();
+    char *getID();
     void PrintLikedList();
 };
 
@@ -84,7 +82,6 @@ class Memory : public Post
     Post *originalPost;
 
 public:
-    Memory(const char *id, const char *text, int d, int m, int y, Base *postuser, Post *orig);
     Memory(const char *id, const char *text, const Date &currentDate, Base *postuser, Post *orig);
     void Print(bool, bool);
 };

@@ -551,14 +551,16 @@ void SocialMediaApp::run(SocialMediaApp *app)
 
     cout << "\nEnter user ID to set as current user (e.g., u7): ";
     getline(cin, inputID);
+    cout << endl;
     app->SetCurrentUser(inputID.c_str());
-
+    cout << endl;
     cout << "Enter current system date (dd mm yyyy): " << endl;
     int day, month, year;
     cout << "|Enter Date: ";
     cin >> day;
     while (day > 31 || day < 0)
     {
+        cout << "|Enter Date: ";
         cin >> day;
     }
 
@@ -566,17 +568,20 @@ void SocialMediaApp::run(SocialMediaApp *app)
     cin >> month;
     while (month > 12 || month < 0)
     {
+        cout << "|Enter Month: ";
         cin >> month;
     }
     cout << "|Enter Year: ";
     cin >> year;
     while (year > 2025 || year < 1999)
     {
+        cout << "|Enter Year: ";
         cin >> year;
     }
     cin.ignore();
     newDate = Date(day, month, year);
     Date::settodaysdate(newDate);
+    cout << endl;
     cout << "System Date set to: ";
     newDate.Print();
     cout << endl;
