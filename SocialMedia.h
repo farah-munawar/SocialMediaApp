@@ -19,15 +19,15 @@ class SocialMediaApp
     const char *postfile;
     const char *commentfile;
 
-    User *currentuser;
+    User *currentuser; // composition
     int nousers;
     int nopages;
     int noposts;
     int totalcomments;
 
-    User **users;
-    Page **pages;
-    Post **posts;
+    User **users; // aggeragation
+    Page **pages; // aggeragation
+    Post **posts; // ssociation
 
     void LoadUsers(ifstream &, char ***, int *, char ***, int *);
     void LoadPages(ifstream &);

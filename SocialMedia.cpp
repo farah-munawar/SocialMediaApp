@@ -572,15 +572,17 @@ void SocialMediaApp::run(SocialMediaApp *app)
     newDate.Print();
     cout << endl;
 
-    cout << "\nPlease select an option from the menu:\n";
+    cout << "\n==========================================\n";
+    cout << "Please select an option from the menu:\n";
     for (int i = 0; i < noOfCommands; i++)
     {
         cout << "  " << i + 1 << ". " << validCommands[i] << '\n';
     }
+    cout << "==========================================\n";
 
     while (!exit)
     {
-        cout << "\n------------------------------------------\n";
+        cout << "\n==========================================\n";
         cout << "Enter your choice (1-" << noOfCommands << "): ";
         cin >> commandIndex;
         cin.ignore();
@@ -629,6 +631,8 @@ void SocialMediaApp::run(SocialMediaApp *app)
             cout << "Enter post ID to like (e.g., post8): ";
             getline(cin, inputID);
             app->LikePost(inputID.c_str());
+            cout << "Post has been Liked." << endl;
+
             break;
         case 9:
             cout << "Enter post ID to comment on (e.g., p2): ";
@@ -636,6 +640,8 @@ void SocialMediaApp::run(SocialMediaApp *app)
             cout << "Enter your comment: ";
             getline(cin, body);
             app->PostComment(inputID.c_str(), body.c_str());
+            cout << "Comment has been Posted." << endl;
+
             break;
         case 10:
             cout << "Enter post ID to share as a memory (e.g., post8): ";
@@ -643,6 +649,7 @@ void SocialMediaApp::run(SocialMediaApp *app)
             cout << "Enter memory content: ";
             getline(cin, body);
             app->ShareMemory(inputID.c_str(), body.c_str());
+            cout << "Memory has been Shared." << endl;
             break;
         case 11:
             cout << "Exiting program." << endl;
