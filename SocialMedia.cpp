@@ -332,31 +332,28 @@ Post *SocialMediaApp::getpostbyID(const char *postID)
 {
     const char *temp = "post";
 
-    if (strncmp(postID, temp, strlen(temp)) != 0) // first index
-        return nullptr;
-
-    for (int i = 0; i < noposts; i++)
+    if (strncmp(postID, temp, strlen(temp)) == 0) // checking if starts with "post"
     {
-        if (posts[i] && strcmp(posts[i]->getID(), postID) == 0)
-            return posts[i];
+        for (int i = 0; i < noposts; i++)
+        {
+            if (posts[i] && strcmp(posts[i]->getID(), postID) == 0) // checking post(string) equal
+            {
+                return posts[i];
+            }
+        }
     }
-
-    return nullptr;
+    else
+    {
+        return nullptr;
+    }
 }
 
-void SocialMediaApp::SetCurrentUser(const char *userID)
+void SocialMediaApp::setcurrentuser(const char *userID)
 {
     const char *temp = "u";
-
-    if (strncmp(userID, temp, strlen(temp)) != 0) // first index
+    if (strncmp(userID, temp, strlen(temp)) == 0) // checking if equal
     {
-        return;
-    }
-
-    currentuser = getuserbyID(userID);
-
-    if (currentuser)
-    {
+        currentuser = getuserbyID(userID); // find user
         currentuser->PrintName();
         cout << " set as Current User." << endl;
     }
@@ -364,69 +361,70 @@ void SocialMediaApp::SetCurrentUser(const char *userID)
 
 void SocialMediaApp::ViewHome()
 {
-    if (!currentuser)
+    if (!currentuser) // check
     {
         cout << "Please set the current user first" << endl;
         return;
     }
 
-    currentuser->ViewHome();
+    currentuser->ViewHome(); // user class homepage
 }
 
 void SocialMediaApp::ViewTimeline()
 {
-    if (!currentuser)
+    if (!currentuser) // check
     {
         cout << "Please set the current user first" << endl;
         return;
     }
 
-    currentuser->ViewTimeline();
+    currentuser->ViewTimeline(); // user class viewtimeline
 }
 
 void SocialMediaApp::ViewPostLikedList(const char *postID)
 {
-    Post *post = getpostbyID(postID);
-
+    Post *post = getpostbyID(postID); // storing post
     if (!post)
     {
         cout << "Post not found!" << endl;
         return;
     }
 
-    post->PrintLikedList();
+    post->PrintLikedList(); // post class
 }
 
-bool SocialMediaApp::LikePost(const char *postID)
+bool SocialMediaApp::likepost(const char *postID)
 {
-    if (!currentuser)
+    if (!currentuser) // check
     {
         cout << "Please set the current user first" << endl;
         return false;
     }
-
-    Post *post = getpostbyID(postID);
-
+    Post *post = getpostbyID(postID); // storing post
     if (post)
-        return post->AddLiker(currentuser);
-
-    return false;
+    {
+        return post->AddLiker(currentuser); // add who added like
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool SocialMediaApp::PostComment(const char *postID, const char *text)
 {
-    if (!currentuser)
+    if (!currentuser) // check
     {
         cout << "Please set the current user first" << endl;
         return false;
     }
 
-    Post *post = getpostbyID(postID);
+    Post *post = getpostbyID(postID); // store post
 
     if (post)
     {
         Comment *newComment = new Comment(('c' + to_string(totalcomments++)).c_str(), text, currentuser);
-        bool status = post->AddComment(newComment);
+        bool status = post->AddComment(newComment); // add comment
 
         if (status)
             return true;
@@ -440,44 +438,43 @@ bool SocialMediaApp::PostComment(const char *postID, const char *text)
 
 void SocialMediaApp::ViewPost(const char *postID)
 {
-    Post *post = getpostbyID(postID);
+    Post *post = getpostbyID(postID); // store post
 
     if (post)
-        post->Print(true);
+        post->Print(true); // print
 }
 
 void SocialMediaApp::ViewFriendList()
 {
-    if (!currentuser)
+    if (!currentuser) // check
     {
         cout << "Please set the current user first" << endl;
         return;
     }
 
-    currentuser->PrintFriendList();
+    currentuser->PrintFriendList(); // print
 }
 
-void SocialMediaApp::ViewLikedPagesList()
+void SocialMediaApp::Viewlikedpageslist()
 {
-    if (!currentuser)
+    if (!currentuser) // check
     {
         cout << "Please set the current user first" << endl;
         return;
     }
 
-    currentuser->PrintLikedPagesList();
+    currentuser->Printlikedpageslist(); // print
 }
 
 void SocialMediaApp::ViewPage(const char *pageID)
 {
-    Page *page = getpagebyID(pageID);
-
+    Page *page = getpagebyID(pageID); // storing pages
     if (page)
-        page->ViewTimeline();
+        page->ViewTimeline(); // print
 }
 
 void SocialMediaApp::PrintMemories()
-{
+{ // print
     if (!currentuser)
     {
         cout << "Please set the current user first" << endl;
@@ -494,15 +491,15 @@ void SocialMediaApp::PrintMemories()
 
 bool SocialMediaApp::ShareMemory(const char *postID, const char *body)
 {
-    if (!currentuser)
+    if (!currentuser) // check
     {
         cout << "Please set the current user first" << endl;
         return false;
     }
 
-    Post *post = getpostbyID(postID);
+    Post *post = getpostbyID(postID); // stores post
 
-    if (post && post->getuser() == currentuser)
+    if (post && post->getuser() == currentuser) // check
     {
         Memory *newPost = new Memory(("post" + to_string(noposts + 1)).c_str(), body, Date::gettodaysdate(), currentuser, post);
         bool status = currentuser->AddPost(newPost);
@@ -512,7 +509,7 @@ bool SocialMediaApp::ShareMemory(const char *postID, const char *body)
             delete newPost;
             return false;
         }
-
+        // memory allocation
         Post **newPostlist = new Post *[noposts + 1];
         for (int i = 0; i < noposts; i++)
             newPostlist[i] = this->posts[i];
@@ -555,7 +552,7 @@ void SocialMediaApp::run(SocialMediaApp *app)
     cout << "\n|Enter user ID to set as current user (e.g., u7): ";
     getline(cin, inputID);
     cout << endl;
-    app->SetCurrentUser(inputID.c_str());
+    app->setcurrentuser(inputID.c_str());
     cout << endl;
     cout << "Enter current system date (dd mm yyyy): " << endl;
     int day, month, year;
@@ -602,6 +599,12 @@ void SocialMediaApp::run(SocialMediaApp *app)
         cout << "\n==========================================\n";
         cout << "Enter your choice (1-" << noOfCommands << "): ";
         cin >> commandIndex;
+        while (commandIndex < 0 || commandIndex > 11)
+        {
+            cout << "Enter again:" << endl;
+            cin >> commandIndex;
+        }
+
         cin.ignore();
 
         commandIndex -= 1;
@@ -629,7 +632,7 @@ void SocialMediaApp::run(SocialMediaApp *app)
             app->ViewFriendList();
             break;
         case 4:
-            app->ViewLikedPagesList();
+            app->Viewlikedpageslist();
             break;
         case 5:
             cout << "Enter post ID to view its liked list (e.g., post8): ";
@@ -647,7 +650,7 @@ void SocialMediaApp::run(SocialMediaApp *app)
         case 8:
             cout << "Enter post ID to like (e.g., post8): ";
             getline(cin, inputID);
-            app->LikePost(inputID.c_str());
+            app->likepost(inputID.c_str());
             cout << "Post has been Liked." << endl;
 
             break;

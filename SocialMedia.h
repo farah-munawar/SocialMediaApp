@@ -56,14 +56,14 @@ public:
     void ReadDataFromFile();
     void ViewPostLikedList(const char *);
     void ViewFriendList();
-    void ViewLikedPagesList();
+    void Viewlikedpageslist();
     void ViewHome();
     void ViewTimeline();
     void ViewPage(const char *);
     void ViewPost(const char *);
     void PrintMemories();
-    void SetCurrentUser(const char *);
-    bool LikePost(const char *);
+    void setcurrentuser(const char *);
+    bool likepost(const char *);
     bool PostComment(const char *, const char *);
     bool ShareMemory(const char *, const char *);
     ~SocialMediaApp();

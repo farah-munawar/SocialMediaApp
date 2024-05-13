@@ -340,7 +340,7 @@ void User::PrintFriendList()
     }
 }
 
-void User::PrintLikedPagesList()
+void User::Printlikedpageslist()
 { // print liked pages only
     PrintName();
 

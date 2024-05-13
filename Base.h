@@ -69,7 +69,7 @@ public:
     int getLikedPagesCount();
     void ViewHome();
     void PrintFriendList();
-    void PrintLikedPagesList();
+    void Printlikedpageslist();
 };
 
 #endif

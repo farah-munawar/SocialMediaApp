@@ -24,13 +24,9 @@ class SocialMediaApp;
 
 int main()
 {
-
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
     SetConsoleTitle(TEXT("Social Media Dashboard"));
-
     // text color: orange
-
     SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN);
 
     SocialMediaApp *app = SocialMediaApp::getapp();
