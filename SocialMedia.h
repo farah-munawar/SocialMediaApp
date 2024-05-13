@@ -34,11 +34,11 @@ class SocialMediaApp
     void LoadPosts(ifstream &);
     void LoadComments(ifstream &);
 
-    void SetFriends(char ***, int *);
-    void SetLikedPages(char ***, int *);
+    void setfriends(char ***, int *);
+    void setlikedpages(char ***, int *);
     User *getuserbyID(const char *);
     Page *getpagebyID(const char *);
-    Post *getPostByID(const char *);
+    Post *getpostbyID(const char *);
 
     SocialMediaApp();
     static SocialMediaApp *app;

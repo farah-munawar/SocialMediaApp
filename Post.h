@@ -63,7 +63,7 @@ protected:
 public:
     Post(const char *, const char *, const Date &, Base *, int = -1, char * = nullptr);
     Post(ifstream &, char *, char **, int &);
-    void LoadData(ifstream &, char *, char **, int &);
+    void LoadDate(ifstream &, char *, char **, int &);
     virtual ~Post();
     Date getpostdate();
     bool AddLiker(Base *);

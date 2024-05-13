@@ -22,7 +22,7 @@ public:
     static void settodaysdate(const Date &d);
     static Date gettodaysdate();
 
-    void LoadData(ifstream &in);
+    void LoadDate(ifstream &in);
     void Print();
 
     bool operator<(const Date &rhs);

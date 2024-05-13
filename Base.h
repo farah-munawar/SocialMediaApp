@@ -25,7 +25,7 @@ public:
     virtual ~Base();
     bool AddPost(Post *);
     Post *getlatestpost();
-    const char *getUserID();
+    const char *getuserID();
     void ViewTimeline();
     void PrintMemories();
     virtual void PrintName() = 0; // pure virtual class(just to connnect)
@@ -61,7 +61,7 @@ class User : public Base
 public:
     User(ifstream &, char **, int &, char **, int &);
     ~User();
-    void LoadData(ifstream &, char **, int &, char **, int &);
+    void LoadDate(ifstream &, char **, int &, char **, int &);
     bool AddFriend(User *);
     bool LikePage(Page *);
     void PrintName();

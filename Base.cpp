@@ -12,21 +12,15 @@ class User;
 Base::Base(ifstream &myfile) : id(nullptr), timeline(nullptr), noPosts(0)
 {
     char temp[10];
-
     myfile >> temp;
     myfile.ignore();
 
-    int size = strlen(temp);
-
-    if (size > 0)
-    {
-        id = new char[size + 1];
-        strcpy(id, temp);
-    }
+    id = new char[strlen(temp) + 1];
+    strcpy(id, temp);
 }
 
 Base::~Base()
-{
+{ // destructor
     if (id)
     {
         delete[] id;
@@ -49,7 +43,7 @@ bool Base::AddPost(Post *p)
         }
     }
 
-    if (noPosts >= maxPosts) // check
+    if (noPosts >= maxPosts) // check greater then 10
     {
         return false;
     }
@@ -86,22 +80,22 @@ Post *Base::getlatestpost()
     {
         if (timeline[i]->getpostdate() <= today)
         { // if no latest has been found yet or this post is more recent then update latest
-
             if (temp == nullptr || temp->getpostdate() < timeline[i]->getpostdate())
+            {
                 temp = timeline[i];
+            }
         }
     }
-
     return temp;
 }
 
-const char *Base::getUserID()
+const char *Base::getuserID()
 {
     return id;
 }
 
 void Base::ViewTimeline()
-{
+{ // print view time line
     PrintName();
     cout << " || Timeline";
     cout << endl
@@ -121,7 +115,7 @@ void Base::ViewTimeline()
 }
 
 void Base::PrintDetails()
-{
+{ // printing id and name
     cout << id;
     cout << " : ";
     PrintName();
@@ -129,23 +123,19 @@ void Base::PrintDetails()
 }
 
 void Base::PrintMemories()
-{
+{ // printing memories
     bool check = false;
     cout << "On this Day" << endl;
-
     for (int i = 0; i < noPosts; i++)
-    {
-        // checking date and month and years<year
-
+    { // checking date and month and years<year
         if (timeline[i]->getpostdate().getDate() == Date::gettodaysdate().getDate() && timeline[i]->getpostdate().getMonth() == Date::gettodaysdate().getMonth() && timeline[i]->getpostdate().getYear() < Date::gettodaysdate().getYear())
         {
-            cout << Date::gettodaysdate().getYear() - timeline[i]->getpostdate().getYear();
+            cout << Date::gettodaysdate().getYear() - timeline[i]->getpostdate().getYear(); // counting years
             cout << " Years Ago" << endl;
             timeline[i]->Print(true);
             check = true;
         }
     }
-
     if (!check)
     {
         cout << "No memories from this day in previous years." << endl;
@@ -154,18 +144,16 @@ void Base::PrintMemories()
 
 User::User(ifstream &myfile, char **friends, int &numfriends, char **likedPages, int &numlikedPages) : Base(myfile), friends(nullptr), likedPages(nullptr), nofriends(0), nolikedpages(0)
 { // constructor
-    LoadData(myfile, friends, numfriends, likedPages, numlikedPages);
+    LoadDate(myfile, friends, numfriends, likedPages, numlikedPages);
 }
 
-void User::LoadData(ifstream &myfile, char **friends, int &numfriends, char **likedPages, int &numlikedPages)
+void User::LoadDate(ifstream &myfile, char **friends, int &numfriends, char **likedPages, int &numlikedPages)
 { // taking data from file
     char temp[100];
     myfile >> temp;
-
-    int size = strlen(temp);
-    if (size > 0)
+    if (strlen(temp) > 0)
     {
-        this->fName = new char[size + 1];
+        this->fName = new char[strlen(temp) + 1];
         strcpy(this->fName, temp);
     }
     else
@@ -175,17 +163,15 @@ void User::LoadData(ifstream &myfile, char **friends, int &numfriends, char **li
 
     myfile >> temp;
 
-    size = strlen(temp);
-    if (size > 0)
+    if (strlen(temp) > 0)
     {
-        this->lName = new char[size + 1];
+        this->lName = new char[strlen(temp) + 1];
         strcpy(this->lName, temp);
     }
     else
     {
         lName = nullptr;
     }
-
     // friends added
     numfriends = 0;
     while (numfriends < maxFriends)
@@ -202,7 +188,6 @@ void User::LoadData(ifstream &myfile, char **friends, int &numfriends, char **li
     }
 
     // add pages
-
     numlikedPages = 0;
     while (numlikedPages < maxlikedpages)
     {
@@ -241,7 +226,6 @@ User::~User()
 
 bool User::AddFriend(User *user)
 {
-
     if (!friends) // check
     {             // memory allocation
         friends = new User *[maxFriends];
@@ -250,7 +234,6 @@ bool User::AddFriend(User *user)
             friends[i] = nullptr;
         }
     }
-
     if (nofriends < maxFriends)
     { // adding new friends
         friends[nofriends++] = user;
@@ -265,7 +248,6 @@ bool User::LikePage(Page *likedPage)
     {
         return false;
     }
-
     if (!likedPages) // check
     {                // memory allocation
         likedPages = new Page *[maxlikedpages];
@@ -274,7 +256,6 @@ bool User::LikePage(Page *likedPage)
             likedPages[i] = nullptr;
         }
     }
-
     if (nolikedpages < maxlikedpages)
     { // adding liked pages
         likedPages[nolikedpages++] = likedPage;
@@ -377,10 +358,9 @@ Page::Page(ifstream &myfile) : Base(myfile), title(nullptr), nolikers(0), likers
     char temp[100];
     if (myfile.getline(temp, 100))
     {
-        int size = strlen(temp);
-        if (size > 0)
+        if (strlen(temp) > 0)
         {
-            title = new char[size + 1];
+            title = new char[strlen(temp) + 1];
             strcpy(title, temp);
         }
     }
@@ -392,7 +372,6 @@ Page::~Page()
     {
         delete[] title;
     }
-
     if (likers)
     {
         delete[] likers;
@@ -405,7 +384,6 @@ bool Page::AddLiker(Base *user)
     {
         return false;
     }
-
     if (!likers)
     { // memory allocation
         likers = new Base *[maxLikers];

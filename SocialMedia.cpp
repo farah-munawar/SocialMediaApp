@@ -16,8 +16,7 @@ using namespace std;
 SocialMediaApp *SocialMediaApp::app = nullptr;
 
 SocialMediaApp::SocialMediaApp() : currentuser(nullptr), users(nullptr), pages(nullptr), posts(nullptr), nousers(0), nopages(0), noposts(0), totalcomments(0)
-{
-
+{ // constructor
     userfile = "User.txt";
     pagefile = "Page.txt";
     postfile = "Post.txt";
@@ -25,7 +24,7 @@ SocialMediaApp::SocialMediaApp() : currentuser(nullptr), users(nullptr), pages(n
 }
 
 SocialMediaApp::~SocialMediaApp()
-{
+{ // destructor
     if (users)
     {
         for (int i = 0; i < nousers; i++)
@@ -52,7 +51,7 @@ SocialMediaApp::~SocialMediaApp()
 }
 
 void SocialMediaApp::ReadDataFromFile()
-{ // loading various types of data  users, pages, posts, and comment.
+{ // loading various types of data  users, pages, posts,comment.
 
     ifstream myfile;
     myfile.open(userfile);
@@ -66,7 +65,6 @@ void SocialMediaApp::ReadDataFromFile()
     users = new User *[nousers];
     // memory allocation
     // num users and there data(user,friends,id,lenght)
-    //  user,pages,id
     char ***userFriends = new char **[nousers]; // nouser
     int *noOfFriends = new int[nousers];
     char ***userLikedPages = new char **[nousers]; // nouser
@@ -82,35 +80,29 @@ void SocialMediaApp::ReadDataFromFile()
             userLikedPages[i][j] = new char[maxidlength]; // p1
     }
 
-    LoadUsers(myfile, userFriends, noOfFriends, userLikedPages, noOfLikedPages);
+    LoadUsers(myfile, userFriends, noOfFriends, userLikedPages, noOfLikedPages); // loading users
     myfile.close();
-
     myfile.open(pagefile);
-
     if (myfile.is_open())
     {
-        myfile >> nopages; // 12
-        pages = new Page *[nopages];
-        LoadPages(myfile);
+        myfile >> nopages;           // 12
+        pages = new Page *[nopages]; // memory allocation
+        LoadPages(myfile);           // loading pages
         myfile.close();
     }
     else
     {
         cout << "File not found.";
     }
-
-    SetFriends(userFriends, noOfFriends);
-    SetLikedPages(userLikedPages, noOfLikedPages);
+    setfriends(userFriends, noOfFriends);          // adding friends
+    setlikedpages(userLikedPages, noOfLikedPages); // adding pages
 
     myfile.open(postfile);
     if (myfile.is_open())
     {
-        myfile >> noposts; // 12
-
-        posts = new Post *[noposts];
-
-        LoadPosts(myfile);
-
+        myfile >> noposts;           // 12
+        posts = new Post *[noposts]; // memory allocation
+        LoadPosts(myfile);           // loading posts
         myfile.close();
     }
     else
@@ -120,9 +112,8 @@ void SocialMediaApp::ReadDataFromFile()
     myfile.open(commentfile);
     if (myfile.is_open())
     {
-        myfile >> totalcomments;
-
-        LoadComments(myfile);
+        myfile >> totalcomments; // 12
+        LoadComments(myfile);    // loading comments
     }
     else
     {
@@ -137,7 +128,6 @@ void SocialMediaApp::ReadDataFromFile()
             for (int j = 0; j < maxfriends; j++)
                 if (userFriends[i][j])
                     delete[] userFriends[i][j];
-
             delete[] userFriends[i];
         }
         if (userLikedPages[i] && userLikedPages)
@@ -145,7 +135,6 @@ void SocialMediaApp::ReadDataFromFile()
             for (int j = 0; j < maxlikedpages; j++)
                 if (userLikedPages[i][j])
                     delete[] userLikedPages[i][j];
-
             delete[] userLikedPages[i];
         }
     }
@@ -163,11 +152,11 @@ void SocialMediaApp::ReadDataFromFile()
     noOfLikedPages = nullptr;
 }
 
-void SocialMediaApp::LoadUsers(ifstream &myfile, char ***userFriends, int *friendsCount, char ***userLikedPages, int *likedPagesCount)
+void SocialMediaApp::LoadUsers(ifstream &myfile, char ***userFriends, int *friendsCount, char ***userLikedPages, int *numlikedpages)
 {
     for (int i = 0; i < nousers; i++)
     {
-        users[i] = new User(myfile, userFriends[i], friendsCount[i], userLikedPages[i], likedPagesCount[i]);
+        users[i] = new User(myfile, userFriends[i], friendsCount[i], userLikedPages[i], numlikedpages[i]);
     }
 }
 
@@ -182,36 +171,55 @@ void SocialMediaApp::LoadPosts(ifstream &myfile)
     myfile.ignore();
     myfile.ignore(100, '\n');
 
+    // memory allocation
     char **likersList = new char *[nousers];
     for (int i = 0; i < nousers; i++)
         likersList[i] = new char[maxidlength];
 
     for (int i = 0; i < noposts; i++)
     {
-        int noOfLikes = 0;
+        int nooflikes = 0;
         char currentuserId[maxidlength];
 
-        posts[i] = new Post(myfile, (char *)currentuserId, likersList, noOfLikes);
-
-        Base *currentuser = (currentuserId[0] == 'u') ? (Base *)getuserbyID(currentuserId) : (Base *)getpagebyID(currentuserId);
-
-        if (currentuser)
+        posts[i] = new Post(myfile, (char *)currentuserId, likersList, nooflikes); // storing posts
+        // to char*
+        Base *currentuser;
+        if (currentuserId[0] == 'u')
         {
-            currentuser->AddPost(posts[i]);
-            posts[i]->SetUser(currentuser);
+            currentuser = (Base *)getuserbyID(currentuserId); // find udser
+        }
+        else
+        {
+            currentuser = (Base *)getpagebyID(currentuserId); // fing page
+        }
 
-            for (int j = 0; j < noOfLikes; j++)
+        if (currentuser) // check
+        {
+            currentuser->AddPost(posts[i]); // add post
+            posts[i]->SetUser(currentuser); // add user
+
+            for (int j = 0; j < nooflikes; j++)
             {
-                Base *liker = (likersList[j][0] == 'u') ? (Base *)getuserbyID(likersList[j]) : (Base *)getpagebyID(likersList[j]);
+                Base *liker;
+                if (likersList[j][0] == 'u')
+                {
+                    liker = (Base *)getuserbyID(likersList[j]); // find user
+                }
+                else
+                {
+                    liker = (Base *)getpagebyID(likersList[j]); // find page
+                }
                 if (liker)
+                {
                     posts[i]->AddLiker(liker);
+                }
             }
         }
 
         myfile.ignore();
-        myfile.ignore(100, '\n');
+        myfile.ignore(100, '\n'); // skip line
     }
-
+    // deallocation
     if (likersList)
     {
         for (int i = 0; i < nousers; i++)
@@ -223,24 +231,30 @@ void SocialMediaApp::LoadPosts(ifstream &myfile)
 }
 
 void SocialMediaApp::LoadComments(ifstream &myfile)
-{
+{ // memory allocation
     for (int i = 0; i < totalcomments; i++)
     {
-        char ownerID[10], postID[10];
-
-        Base *owner = nullptr;
+        char theuserID[10], postID[10];
         Post *post = nullptr;
-        Comment *temp = new Comment(myfile, postID, ownerID);
-        if (strlen(ownerID) > 0)
+        Comment *temp = new Comment(myfile, postID, theuserID);
+        if (strlen(theuserID) > 0)
         {
-            owner = (ownerID[0] == 'p') ? (Base *)getpagebyID(ownerID) : getuserbyID(ownerID);
+            Base *theuser = nullptr;
+            if (theuserID[0] == 'p') // check
+            {
+                theuser = (Base *)getpagebyID(theuserID); // find page
+            }
+            else
+            {
+                theuser = getuserbyID(theuserID); // or using users
+            }
 
-            post = getPostByID(postID);
+            post = getpostbyID(postID);
             if (post)
             {
                 post->AddComment(temp);
-                if (owner)
-                    temp->setpostuser(owner);
+                if (theuser)
+                    temp->setpostuser(theuser); // who posted
                 break;
             }
             else
@@ -252,66 +266,69 @@ void SocialMediaApp::LoadComments(ifstream &myfile)
     }
 }
 
-void SocialMediaApp::SetFriends(char ***userFriends, int *friendsCount)
+void SocialMediaApp::setfriends(char ***userFriends, int *friendsCount)
 {
     for (int i = 0; i < nousers; i++)
     {
         for (int j = 0; j < friendsCount[i]; j++)
         {
-            User *newFriend = getuserbyID(userFriends[i][j]);
-
-            users[i]->AddFriend(newFriend);
+            User *newFriend = getuserbyID(userFriends[i][j]); // getting users
+            users[i]->AddFriend(newFriend);                   // adding friends
         }
     }
 }
 
-void SocialMediaApp::SetLikedPages(char ***userLikedPages, int *likedPagesCount)
+void SocialMediaApp::setlikedpages(char ***userLikedPages, int *numlikedpages)
 {
     for (int i = 0; i < nousers; i++)
     {
-        for (int j = 0; j < likedPagesCount[i]; j++)
+        for (int j = 0; j < numlikedpages[i]; j++)
         {
-            Page *likedPage = getpagebyID(userLikedPages[i][j]);
+            Page *likedPage = getpagebyID(userLikedPages[i][j]); // find liked pages
 
-            users[i]->LikePage(likedPage);
-            likedPage->AddLiker(users[i]);
+            users[i]->LikePage(likedPage); // add page
+            likedPage->AddLiker(users[i]); // add liker
         }
     }
 }
 
 User *SocialMediaApp::getuserbyID(const char *userID)
 {
-    if (!userID || userID[0] != 'u')
-        return nullptr;
-
-    for (int i = 0; i < nousers; i++)
+    if (userID && userID[0] == 'u') // check
     {
-        if (users[i] && strcmp(users[i]->getUserID(), userID) == 0)
+        for (int i = 0; i < nousers; i++)
         {
-            return users[i];
+            if (users[i] && strcmp(users[i]->getuserID(), userID) == 0) // checking both user equal(string)
+            {
+                return users[i];
+            }
         }
     }
-
-    return nullptr;
+    else
+    {
+        return nullptr;
+    }
 }
 
 Page *SocialMediaApp::getpagebyID(const char *pageID)
 {
-    if (!pageID || pageID[0] != 'p')
-        return nullptr;
-
-    for (int i = 0; i < nopages; i++)
+    if (pageID && pageID[0] == 'p') // check
     {
-        if (pages[i] && strcmp(pages[i]->getUserID(), pageID) == 0)
+        for (int i = 0; i < nopages; i++)
         {
-            return pages[i];
+            if (pages[i] && strcmp(pages[i]->getuserID(), pageID) == 0) // checking both pages equal(string)
+            {
+                return pages[i];
+            }
         }
     }
-
-    return nullptr;
+    else
+    {
+        return nullptr;
+    }
 }
 
-Post *SocialMediaApp::getPostByID(const char *postID)
+Post *SocialMediaApp::getpostbyID(const char *postID)
 {
     const char *temp = "post";
 
@@ -369,7 +386,7 @@ void SocialMediaApp::ViewTimeline()
 
 void SocialMediaApp::ViewPostLikedList(const char *postID)
 {
-    Post *post = getPostByID(postID);
+    Post *post = getpostbyID(postID);
 
     if (!post)
     {
@@ -388,7 +405,7 @@ bool SocialMediaApp::LikePost(const char *postID)
         return false;
     }
 
-    Post *post = getPostByID(postID);
+    Post *post = getpostbyID(postID);
 
     if (post)
         return post->AddLiker(currentuser);
@@ -404,7 +421,7 @@ bool SocialMediaApp::PostComment(const char *postID, const char *text)
         return false;
     }
 
-    Post *post = getPostByID(postID);
+    Post *post = getpostbyID(postID);
 
     if (post)
     {
@@ -423,7 +440,7 @@ bool SocialMediaApp::PostComment(const char *postID, const char *text)
 
 void SocialMediaApp::ViewPost(const char *postID)
 {
-    Post *post = getPostByID(postID);
+    Post *post = getpostbyID(postID);
 
     if (post)
         post->Print(true);
@@ -483,7 +500,7 @@ bool SocialMediaApp::ShareMemory(const char *postID, const char *body)
         return false;
     }
 
-    Post *post = getPostByID(postID);
+    Post *post = getpostbyID(postID);
 
     if (post && post->getuser() == currentuser)
     {

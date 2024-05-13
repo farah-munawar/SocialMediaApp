@@ -23,7 +23,7 @@ Date Date::gettodaysdate()
 
 Date::Date(int d, int m, int y) : date(d), month(m), year(y) {}
 
-void Date::LoadData(ifstream &myfile)
+void Date::LoadDate(ifstream &myfile)
 {
     myfile >> date;
     myfile >> month;
