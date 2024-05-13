@@ -26,7 +26,6 @@ Post::Post(const char *id, const char *text, const Date &d, Base *postuser, int 
         this->text = new char[strlen(text) + 1];
         strcpy(this->text, text);
     }
-    
 }
 
 Post::Post(ifstream &myfile, char *theuser, char **likersList, int &numlikes)
@@ -289,8 +288,6 @@ const char *Activity::types[notypes] = {
     "thinking about",
     "making",
     "celebrating"};
-
-
 
 Activity::Activity(ifstream &myfile)
 {

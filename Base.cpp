@@ -241,10 +241,6 @@ User::~User()
 
 bool User::AddFriend(User *user)
 {
-    if (!user) // check
-    {
-        return false;
-    }
 
     if (!friends) // check
     {             // memory allocation

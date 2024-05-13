@@ -15,23 +15,13 @@ class Date;
 using namespace std;
 SocialMediaApp *SocialMediaApp::app = nullptr;
 
-SocialMediaApp::SocialMediaApp()
+SocialMediaApp::SocialMediaApp() : currentuser(nullptr), users(nullptr), pages(nullptr), posts(nullptr), nousers(0), nopages(0), noposts(0), totalcomments(0)
 {
-    currentuser = nullptr;
 
     userfile = "User.txt";
     pagefile = "Page.txt";
     postfile = "Post.txt";
     commentfile = "Comment.txt";
-
-    users = nullptr;
-    pages = nullptr;
-    posts = nullptr;
-
-    nousers = 0;
-    nopages = 0;
-    noposts = 0;
-    totalcomments = 0;
 }
 
 SocialMediaApp::~SocialMediaApp()
@@ -62,63 +52,87 @@ SocialMediaApp::~SocialMediaApp()
 }
 
 void SocialMediaApp::ReadDataFromFile()
-{
+{ // loading various types of data  users, pages, posts, and comment.
+
     ifstream myfile;
-
     myfile.open(userfile);
-
     if (!myfile.is_open())
+    {
+        cout << "File do not exist." << endl;
         return;
+    }
 
-    myfile >> nousers;
-
+    myfile >> nousers; // 20
     users = new User *[nousers];
-    char ***userFriends = new char **[nousers];
+    // memory allocation
+    // num users and there data(user,friends,id,lenght)
+    //  user,pages,id
+    char ***userFriends = new char **[nousers]; // nouser
     int *noOfFriends = new int[nousers];
-    char ***userLikedPages = new char **[nousers];
+    char ***userLikedPages = new char **[nousers]; // nouser
     int *noOfLikedPages = new int[nousers];
-
     for (int i = 0; i < nousers; i++)
     {
-        userFriends[i] = new char *[maxfriends];
+        userFriends[i] = new char *[maxfriends]; // maxfriends
         for (int j = 0; j < maxfriends; j++)
-            userFriends[i][j] = new char[maxidlength];
+            userFriends[i][j] = new char[maxidlength]; // u7
 
-        userLikedPages[i] = new char *[maxlikedpages];
+        userLikedPages[i] = new char *[maxlikedpages]; // maxpages
         for (int j = 0; j < maxlikedpages; j++)
-            userLikedPages[i][j] = new char[maxidlength];
+            userLikedPages[i][j] = new char[maxidlength]; // p1
     }
 
     LoadUsers(myfile, userFriends, noOfFriends, userLikedPages, noOfLikedPages);
-
     myfile.close();
 
     myfile.open(pagefile);
 
     if (myfile.is_open())
     {
-        myfile >> nopages;
-
+        myfile >> nopages; // 12
         pages = new Page *[nopages];
-
         LoadPages(myfile);
-
         myfile.close();
     }
+    else
+    {
+        cout << "File not found.";
+    }
+
     SetFriends(userFriends, noOfFriends);
     SetLikedPages(userLikedPages, noOfLikedPages);
 
-    bool deleteUserFriends = false, deleteUserLikedPages = false;
+    myfile.open(postfile);
+    if (myfile.is_open())
+    {
+        myfile >> noposts; // 12
 
-    if (userFriends)
-        deleteUserFriends = true;
+        posts = new Post *[noposts];
 
-    if (userLikedPages)
-        deleteUserLikedPages = true;
+        LoadPosts(myfile);
 
+        myfile.close();
+    }
+    else
+    {
+        cout << "File not found.";
+    }
+    myfile.open(commentfile);
+    if (myfile.is_open())
+    {
+        myfile >> totalcomments;
+
+        LoadComments(myfile);
+    }
+    else
+    {
+        cout << "File not found.";
+    }
+
+    // deallocation
     for (int i = 0; i < nousers; i++)
     {
-        if (userFriends[i] && deleteUserFriends)
+        if (userFriends[i] && userFriends)
         {
             for (int j = 0; j < maxfriends; j++)
                 if (userFriends[i][j])
@@ -126,7 +140,7 @@ void SocialMediaApp::ReadDataFromFile()
 
             delete[] userFriends[i];
         }
-        if (userLikedPages[i] && deleteUserLikedPages)
+        if (userLikedPages[i] && userLikedPages)
         {
             for (int j = 0; j < maxlikedpages; j++)
                 if (userLikedPages[i][j])
@@ -136,39 +150,17 @@ void SocialMediaApp::ReadDataFromFile()
         }
     }
 
-    if (deleteUserFriends)
+    if (userFriends)
         delete[] userFriends;
     delete[] noOfFriends;
     userFriends = nullptr;
     noOfFriends = nullptr;
 
-    if (deleteUserLikedPages)
+    if (userLikedPages)
         delete[] userLikedPages;
     delete[] noOfLikedPages;
     userLikedPages = nullptr;
     noOfLikedPages = nullptr;
-
-    myfile.open(postfile);
-
-    if (myfile.is_open())
-    {
-        myfile >> noposts;
-
-        posts = new Post *[noposts];
-
-        LoadPosts(myfile);
-
-        myfile.close();
-    }
-
-    myfile.open(commentfile);
-
-    if (myfile.is_open())
-    {
-        myfile >> totalcomments;
-
-        LoadComments(myfile);
-    }
 }
 
 void SocialMediaApp::LoadUsers(ifstream &myfile, char ***userFriends, int *friendsCount, char ***userLikedPages, int *likedPagesCount)
@@ -197,20 +189,20 @@ void SocialMediaApp::LoadPosts(ifstream &myfile)
     for (int i = 0; i < noposts; i++)
     {
         int noOfLikes = 0;
-        char ownerId[maxidlength];
+        char currentuserId[maxidlength];
 
-        posts[i] = new Post(myfile, (char *)ownerId, likersList, noOfLikes);
+        posts[i] = new Post(myfile, (char *)currentuserId, likersList, noOfLikes);
 
-        Base *owner = (ownerId[0] == 'u') ? (Base *)SearchUserByID(ownerId) : (Base *)SearchPageByID(ownerId);
+        Base *currentuser = (currentuserId[0] == 'u') ? (Base *)getuserbyID(currentuserId) : (Base *)getpagebyID(currentuserId);
 
-        if (owner)
+        if (currentuser)
         {
-            owner->AddPost(posts[i]);
-            posts[i]->SetUser(owner);
+            currentuser->AddPost(posts[i]);
+            posts[i]->SetUser(currentuser);
 
             for (int j = 0; j < noOfLikes; j++)
             {
-                Base *liker = (likersList[j][0] == 'u') ? (Base *)SearchUserByID(likersList[j]) : (Base *)SearchPageByID(likersList[j]);
+                Base *liker = (likersList[j][0] == 'u') ? (Base *)getuserbyID(likersList[j]) : (Base *)getpagebyID(likersList[j]);
                 if (liker)
                     posts[i]->AddLiker(liker);
             }
@@ -241,7 +233,7 @@ void SocialMediaApp::LoadComments(ifstream &myfile)
         Comment *temp = new Comment(myfile, postID, ownerID);
         if (strlen(ownerID) > 0)
         {
-            owner = (ownerID[0] == 'p') ? (Base *)SearchPageByID(ownerID) : SearchUserByID(ownerID);
+            owner = (ownerID[0] == 'p') ? (Base *)getpagebyID(ownerID) : getuserbyID(ownerID);
 
             post = getPostByID(postID);
             if (post)
@@ -266,10 +258,9 @@ void SocialMediaApp::SetFriends(char ***userFriends, int *friendsCount)
     {
         for (int j = 0; j < friendsCount[i]; j++)
         {
-            User *newFriend = SearchUserByID(userFriends[i][j]);
+            User *newFriend = getuserbyID(userFriends[i][j]);
 
-            if (newFriend)
-                users[i]->AddFriend(newFriend);
+            users[i]->AddFriend(newFriend);
         }
     }
 }
@@ -280,18 +271,15 @@ void SocialMediaApp::SetLikedPages(char ***userLikedPages, int *likedPagesCount)
     {
         for (int j = 0; j < likedPagesCount[i]; j++)
         {
-            Page *likedPage = SearchPageByID(userLikedPages[i][j]);
+            Page *likedPage = getpagebyID(userLikedPages[i][j]);
 
-            if (likedPage)
-            {
-                users[i]->LikePage(likedPage);
-                likedPage->AddLiker(users[i]);
-            }
+            users[i]->LikePage(likedPage);
+            likedPage->AddLiker(users[i]);
         }
     }
 }
 
-User *SocialMediaApp::SearchUserByID(const char *userID)
+User *SocialMediaApp::getuserbyID(const char *userID)
 {
     if (!userID || userID[0] != 'u')
         return nullptr;
@@ -307,7 +295,7 @@ User *SocialMediaApp::SearchUserByID(const char *userID)
     return nullptr;
 }
 
-Page *SocialMediaApp::SearchPageByID(const char *pageID)
+Page *SocialMediaApp::getpagebyID(const char *pageID)
 {
     if (!pageID || pageID[0] != 'p')
         return nullptr;
@@ -327,7 +315,7 @@ Post *SocialMediaApp::getPostByID(const char *postID)
 {
     const char *temp = "post";
 
-    if (strncmp(postID, temp, strlen(temp)) != 0)
+    if (strncmp(postID, temp, strlen(temp)) != 0) // first index
         return nullptr;
 
     for (int i = 0; i < noposts; i++)
@@ -341,17 +329,19 @@ Post *SocialMediaApp::getPostByID(const char *postID)
 
 void SocialMediaApp::SetCurrentUser(const char *userID)
 {
-    const char *idPrefix = "u";
+    const char *temp = "u";
 
-    if (strncmp(userID, idPrefix, strlen(idPrefix)) != 0)
+    if (strncmp(userID, temp, strlen(temp)) != 0) // first index
+    {
         return;
+    }
 
-    currentuser = SearchUserByID(userID);
+    currentuser = getuserbyID(userID);
 
     if (currentuser)
     {
         currentuser->PrintName();
-        cout << " successfully set as Current User." << endl;
+        cout << " set as Current User." << endl;
     }
 }
 
@@ -463,7 +453,7 @@ void SocialMediaApp::ViewLikedPagesList()
 
 void SocialMediaApp::ViewPage(const char *pageID)
 {
-    Page *page = SearchPageByID(pageID);
+    Page *page = getpagebyID(pageID);
 
     if (page)
         page->ViewTimeline();
@@ -507,16 +497,12 @@ bool SocialMediaApp::ShareMemory(const char *postID, const char *body)
         }
 
         Post **newPostlist = new Post *[noposts + 1];
-
         for (int i = 0; i < noposts; i++)
             newPostlist[i] = this->posts[i];
-
         newPostlist[noposts++] = newPost;
 
         delete[] this->posts;
-
-        this->posts = newPostlist;
-
+        this->posts = newPostlist; // adding new address
         return true;
     }
 
@@ -527,17 +513,17 @@ void SocialMediaApp::run(SocialMediaApp *app)
 {
     const int noOfCommands = 12;
     string validCommands[] = {
-        "  |View Home  ",
-        "  |Like Post",
-        "  |View Liked List",
-        "  |Post Comment",
-        "  |View Post",
-        "  |View Memories",
-        "  |Share Memory",
+        "  |View Home",
         "  |View Timeline",
+        "  |View Post",
         "  |View Friend List",
-        " |View Liked Pages",
-        " |View Page",
+        "  |View Liked Pages",
+        "  |View Liked List",
+        "  |View Memories",
+        "  |View Page",
+        "  |Like Post",
+        " |Post Comment",
+        " |Share Memory",
         " |Exit"};
 
     int commandIndex = 0;
@@ -549,7 +535,7 @@ void SocialMediaApp::run(SocialMediaApp *app)
     cout << " Welcome to the Social Media Application! \n";
     cout << "==========================================\n";
 
-    cout << "\nEnter user ID to set as current user (e.g., u7): ";
+    cout << "\n|Enter user ID to set as current user (e.g., u7): ";
     getline(cin, inputID);
     cout << endl;
     app->SetCurrentUser(inputID.c_str());
@@ -613,50 +599,50 @@ void SocialMediaApp::run(SocialMediaApp *app)
             app->ViewHome();
             break;
         case 1:
-            cout << "Enter post ID to like (e.g., post5): ";
-            getline(cin, inputID);
-            app->LikePost(inputID.c_str());
+            app->ViewTimeline();
             break;
         case 2:
-            cout << "Enter post ID to view its liked list: ";
+            cout << "Enter post ID to view (e.g., post8): ";
+            getline(cin, inputID);
+            app->ViewPost(inputID.c_str());
+            break;
+        case 3:
+            app->ViewFriendList();
+            break;
+        case 4:
+            app->ViewLikedPagesList();
+            break;
+        case 5:
+            cout << "Enter post ID to view its liked list (e.g., post8): ";
             getline(cin, inputID);
             app->ViewPostLikedList(inputID.c_str());
             break;
-        case 3:
-            cout << "Enter post ID to comment on: ";
+        case 6:
+            app->PrintMemories();
+            break;
+        case 7:
+            cout << "Enter page ID to view (e.g., p2): ";
+            getline(cin, inputID);
+            app->ViewPage(inputID.c_str());
+            break;
+        case 8:
+            cout << "Enter post ID to like (e.g., post8): ";
+            getline(cin, inputID);
+            app->LikePost(inputID.c_str());
+            break;
+        case 9:
+            cout << "Enter post ID to comment on (e.g., p2): ";
             getline(cin, inputID);
             cout << "Enter your comment: ";
             getline(cin, body);
             app->PostComment(inputID.c_str(), body.c_str());
             break;
-        case 4:
-            cout << "Enter post ID to view: ";
-            getline(cin, inputID);
-            app->ViewPost(inputID.c_str());
-            break;
-        case 5:
-            app->PrintMemories();
-            break;
-        case 6:
-            cout << "Enter post ID to share as a memory: ";
+        case 10:
+            cout << "Enter post ID to share as a memory (e.g., post8): ";
             getline(cin, inputID);
             cout << "Enter memory content: ";
             getline(cin, body);
             app->ShareMemory(inputID.c_str(), body.c_str());
-            break;
-        case 7:
-            app->ViewTimeline();
-            break;
-        case 8:
-            app->ViewFriendList();
-            break;
-        case 9:
-            app->ViewLikedPagesList();
-            break;
-        case 10:
-            cout << "Enter page ID to view: ";
-            getline(cin, inputID);
-            app->ViewPage(inputID.c_str());
             break;
         case 11:
             cout << "Exiting program." << endl;

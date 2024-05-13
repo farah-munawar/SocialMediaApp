@@ -16,9 +16,9 @@ class Activity;
 class Base
 {
     char *id;
+    int noPosts;
     const int maxPosts = 10;
     Post **timeline;
-    int noPosts;
 
 public:
     Base(ifstream &);

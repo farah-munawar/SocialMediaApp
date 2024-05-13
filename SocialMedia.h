@@ -36,8 +36,8 @@ class SocialMediaApp
 
     void SetFriends(char ***, int *);
     void SetLikedPages(char ***, int *);
-    User *SearchUserByID(const char *);
-    Page *SearchPageByID(const char *);
+    User *getuserbyID(const char *);
+    Page *getpagebyID(const char *);
     Post *getPostByID(const char *);
 
     SocialMediaApp();
