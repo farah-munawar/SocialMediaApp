@@ -9,8 +9,8 @@
 #include "Date.h"
 
 using namespace std;
-class Post;
-class Date;
+class Post; // aggregation
+class Date; // dependency
 class Activity;
 
 class Base
@@ -46,16 +46,16 @@ public:
     void PrintName();
 };
 class User : public Base
-{
+{ // user and post association throught base class
     char *fName;
     char *lName;
     const int maxFriends = 10;
     const int maxlikedpages = 10;
 
-    Page **likedPages;
+    Page **likedPages; // aggregation
     int nolikedpages;
 
-    User **friends;
+    User **friends; // aggreation
     int nofriends;
 
 public:

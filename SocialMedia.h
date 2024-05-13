@@ -4,11 +4,11 @@
 #include <fstream>
 #include "Post.h"
 #include "Base.h"
-#include "Date.h"
-class Post;
-class User;
-class Page;
-class Base;
+#include "Date.h" //dependent
+class Post;       // aggeragation and association(user and pages)
+class User;       // aggeragation(independ)
+class Page;       // aggeragation
+class Base;       // association
 class SocialMediaApp
 {
     const int maxfriends = 10;
@@ -25,9 +25,9 @@ class SocialMediaApp
     int noposts;
     int totalcomments;
 
-    User **users; // aggeragation
-    Page **pages; // aggeragation
-    Post **posts; // ssociation
+    User **users;
+    Page **pages;
+    Post **posts;
 
     void LoadUsers(ifstream &, char ***, int *, char ***, int *);
     void LoadPages(ifstream &);

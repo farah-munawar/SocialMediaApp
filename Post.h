@@ -9,8 +9,8 @@ using namespace std;
 class Base;
 class Date;
 class Page;
-class Comment;
-class Activity
+class Comment; // assocation(using the post data)
+class Activity // user and post association
 {
     static const int notypes = 4;
     static const char *types[notypes];
@@ -23,7 +23,7 @@ public:
     void Print();
 };
 
-class Comment
+class Comment // association with user and post
 {
     char *id;
     char *text;
