@@ -136,7 +136,6 @@ void Post::Print(bool printDate, bool Com)
         shareDate.Print(); // post date
     }
     cout << endl;
-
     if (Com)
     {
         PrintComments(); // print comment
@@ -163,7 +162,6 @@ bool Post::AddLiker(Base *user)
             return false;
         }
     }
-
     // adding the user to the likers array
     if (noOfLikers < maxLikers)
     {
@@ -176,18 +174,16 @@ bool Post::AddLiker(Base *user)
 
 bool Post::AddComment(Comment *com)
 {
-    if (!com)
+    if (!com) // just to check
     {
         return false;
     }
-
     if (!comments)
     { // memory allocation
         comments = new Comment *[maxComments];
         for (int i = 0; i < maxComments; i++)
             comments[i] = nullptr;
     }
-
     // add comment
     if (noOfComments < maxComments) // check less then 10
     {
@@ -195,7 +191,6 @@ bool Post::AddComment(Comment *com)
 
         return true;
     }
-
     return false;
 }
 
@@ -218,7 +213,6 @@ void Post::PrintComments()
             break;
         }
     }
-
     cout << endl;
 }
 
@@ -381,8 +375,12 @@ void Comment::Print()
 Comment::~Comment()
 { // destructor
     if (id)
+    {
         delete[] id;
+    }
 
     if (text)
+    {
         delete[] text;
+    }
 }

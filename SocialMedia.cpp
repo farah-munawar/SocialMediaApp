@@ -24,8 +24,7 @@ SocialMediaApp::SocialMediaApp() : currentuser(nullptr), users(nullptr), pages(n
 }
 
 void SocialMediaApp::ReadDataFromFile()
-{ // loading various types of data  users, pages, posts,comment.
-
+{ // loading various types of data : users, pages, posts,comment.
     ifstream myfile;
     myfile.open(userfile);
     if (!myfile.is_open())
@@ -111,13 +110,11 @@ void SocialMediaApp::ReadDataFromFile()
             delete[] userLikedPages[i];
         }
     }
-
     if (userFriends)
         delete[] userFriends;
     delete[] noOfFriends;
     userFriends = nullptr;
     noOfFriends = nullptr;
-
     if (userLikedPages)
         delete[] userLikedPages;
     delete[] noOfLikedPages;
@@ -197,7 +194,7 @@ void SocialMediaApp::LoadPosts(ifstream &myfile)
     }
 }
 void SocialMediaApp::LoadPages(ifstream &myfile)
-{
+{ // loading pages
     for (int i = 0; i < nopages; i++)
         pages[i] = new Page(myfile);
 }
