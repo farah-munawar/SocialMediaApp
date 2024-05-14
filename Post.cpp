@@ -360,15 +360,6 @@ Comment::Comment(ifstream &myfile, char *postID, char *theuser) : id(nullptr), t
     }
 }
 
-Comment::~Comment()
-{ // destructor
-    if (id)
-        delete[] id;
-
-    if (text)
-        delete[] text;
-}
-
 void Comment::setpostuser(Base *user)
 {
     postuser = user;
@@ -386,4 +377,12 @@ void Comment::Print()
     if (text)
         cout << "\"" << text << "\"" << endl;
     ;
+}
+Comment::~Comment()
+{ // destructor
+    if (id)
+        delete[] id;
+
+    if (text)
+        delete[] text;
 }

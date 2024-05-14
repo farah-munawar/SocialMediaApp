@@ -150,7 +150,7 @@ User::User(ifstream &myfile, char **friends, int &numfriends, char **likedPages,
 void User::LoadDate(ifstream &myfile, char **friends, int &numfriends, char **likedPages, int &numlikedPages)
 { // taking data from file
     char temp[100];
-    myfile >> temp;
+    myfile >> temp; // first name
     if (strlen(temp) > 0)
     {
         this->fName = new char[strlen(temp) + 1];
@@ -161,7 +161,7 @@ void User::LoadDate(ifstream &myfile, char **friends, int &numfriends, char **li
         fName = nullptr;
     }
 
-    myfile >> temp;
+    myfile >> temp; // last name
 
     if (strlen(temp) > 0)
     {
@@ -174,16 +174,16 @@ void User::LoadDate(ifstream &myfile, char **friends, int &numfriends, char **li
     }
     // friends added
     numfriends = 0;
-    while (numfriends < maxFriends)
+    while (numfriends < maxFriends) // check
     {
-        myfile >> temp;
-        if (strcmp(temp, "-1") == 0)
+        myfile >> temp;              // friends
+        if (strcmp(temp, "-1") == 0) // check
         {
             break;
         }
         else
         {
-            strcpy(friends[numfriends++], temp);
+            strcpy(friends[numfriends++], temp); // storing friends
         }
     }
 
@@ -191,36 +191,15 @@ void User::LoadDate(ifstream &myfile, char **friends, int &numfriends, char **li
     numlikedPages = 0;
     while (numlikedPages < maxlikedpages)
     {
-        myfile >> temp;
-        if (strcmp(temp, "-1") == 0)
+        myfile >> temp;              // pages
+        if (strcmp(temp, "-1") == 0) // check
         {
             break;
         }
         else
         {
-            strcpy(likedPages[numlikedPages++], temp);
+            strcpy(likedPages[numlikedPages++], temp); // storing liked page
         }
-    }
-}
-
-User::~User()
-{
-    if (fName)
-    {
-        delete[] fName;
-    }
-    if (lName)
-    {
-        delete[] lName;
-    }
-
-    if (likedPages)
-    {
-        delete[] likedPages;
-    }
-    if (friends)
-    {
-        delete[] friends;
     }
 }
 
@@ -265,7 +244,7 @@ bool User::LikePage(Page *likedPage)
 }
 
 void User::PrintName()
-{
+{ // print
     if (fName)
     {
         cout << fName << ' ';
@@ -275,15 +254,14 @@ void User::PrintName()
         cout << lName;
     }
 }
+int User::getLikedPagesCount()
+{
+    return nolikedpages;
+}
 
 int User::getfriendCount()
 {
     return nofriends;
-}
-
-int User::getLikedPagesCount()
-{
-    return nolikedpages;
 }
 
 void User::ViewHome()
@@ -327,7 +305,18 @@ void User::ViewHome()
         }
     }
 }
+void User::Printlikedpageslist()
+{ // print liked pages only
+    PrintName();
 
+    cout << " || Liked Pages" << endl
+         << endl;
+
+    for (int i = 0; i < nolikedpages; i++)
+    {
+        likedPages[i]->PrintDetails();
+    }
+}
 void User::PrintFriendList()
 { // print friend list
     PrintName();
@@ -340,16 +329,24 @@ void User::PrintFriendList()
     }
 }
 
-void User::Printlikedpageslist()
-{ // print liked pages only
-    PrintName();
-
-    cout << " || Liked Pages" << endl
-         << endl;
-
-    for (int i = 0; i < nolikedpages; i++)
+User::~User()
+{ // destuctor
+    if (fName)
     {
-        likedPages[i]->PrintDetails();
+        delete[] fName;
+    }
+    if (lName)
+    {
+        delete[] lName;
+    }
+
+    if (likedPages)
+    {
+        delete[] likedPages;
+    }
+    if (friends)
+    {
+        delete[] friends;
     }
 }
 
@@ -363,18 +360,6 @@ Page::Page(ifstream &myfile) : Base(myfile), title(nullptr), nolikers(0), likers
             title = new char[strlen(temp) + 1];
             strcpy(title, temp);
         }
-    }
-}
-
-Page::~Page()
-{
-    if (title)
-    {
-        delete[] title;
-    }
-    if (likers)
-    {
-        delete[] likers;
     }
 }
 
@@ -403,5 +388,16 @@ void Page::PrintName()
     if (title)
     {
         cout << title;
+    }
+}
+Page::~Page()
+{
+    if (title)
+    {
+        delete[] title;
+    }
+    if (likers)
+    {
+        delete[] likers;
     }
 }
