@@ -54,8 +54,8 @@ public:
 
     void run(SocialMediaApp *app);
     void ReadDataFromFile();
-    void ViewPostLikedList(const char *);
-    void ViewFriendList();
+    void Viewpostlikedlist(const char *);
+    void ViewfriendLlist();
     void Viewlikedpageslist();
     void ViewHome();
     void ViewTimeline();

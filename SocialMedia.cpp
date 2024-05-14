@@ -186,7 +186,7 @@ void SocialMediaApp::LoadPosts(ifstream &myfile)
         Base *currentuser;
         if (currentuserId[0] == 'u')
         {
-            currentuser = (Base *)getuserbyID(currentuserId); // find udser
+            currentuser = (Base *)getuserbyID(currentuserId); // find user
         }
         else
         {
@@ -361,27 +361,17 @@ void SocialMediaApp::setcurrentuser(const char *userID)
 
 void SocialMediaApp::ViewHome()
 {
-    if (!currentuser) // check
-    {
-        cout << "Please set the current user first" << endl;
-        return;
-    }
 
     currentuser->ViewHome(); // user class homepage
 }
 
 void SocialMediaApp::ViewTimeline()
 {
-    if (!currentuser) // check
-    {
-        cout << "Please set the current user first" << endl;
-        return;
-    }
 
     currentuser->ViewTimeline(); // user class viewtimeline
 }
 
-void SocialMediaApp::ViewPostLikedList(const char *postID)
+void SocialMediaApp::Viewpostlikedlist(const char *postID)
 {
     Post *post = getpostbyID(postID); // storing post
     if (!post)
@@ -395,11 +385,7 @@ void SocialMediaApp::ViewPostLikedList(const char *postID)
 
 bool SocialMediaApp::likepost(const char *postID)
 {
-    if (!currentuser) // check
-    {
-        cout << "Please set the current user first" << endl;
-        return false;
-    }
+
     Post *post = getpostbyID(postID); // storing post
     if (post)
     {
@@ -413,11 +399,6 @@ bool SocialMediaApp::likepost(const char *postID)
 
 bool SocialMediaApp::PostComment(const char *postID, const char *text)
 {
-    if (!currentuser) // check
-    {
-        cout << "Please set the current user first" << endl;
-        return false;
-    }
 
     Post *post = getpostbyID(postID); // store post
 
@@ -444,24 +425,14 @@ void SocialMediaApp::ViewPost(const char *postID)
         post->Print(true); // print
 }
 
-void SocialMediaApp::ViewFriendList()
+void SocialMediaApp::ViewfriendLlist()
 {
-    if (!currentuser) // check
-    {
-        cout << "Please set the current user first" << endl;
-        return;
-    }
 
     currentuser->PrintFriendList(); // print
 }
 
 void SocialMediaApp::Viewlikedpageslist()
 {
-    if (!currentuser) // check
-    {
-        cout << "Please set the current user first" << endl;
-        return;
-    }
 
     currentuser->Printlikedpageslist(); // print
 }
@@ -475,11 +446,6 @@ void SocialMediaApp::ViewPage(const char *pageID)
 
 void SocialMediaApp::PrintMemories()
 { // print
-    if (!currentuser)
-    {
-        cout << "Please set the current user first" << endl;
-        return;
-    }
 
     cout << endl
          << "We hope you enjoy looking back and sharing your memories on our app,";
@@ -489,19 +455,14 @@ void SocialMediaApp::PrintMemories()
     currentuser->PrintMemories();
 }
 
-bool SocialMediaApp::ShareMemory(const char *postID, const char *body)
+bool SocialMediaApp::ShareMemory(const char *postID, const char *line)
 {
-    if (!currentuser) // check
-    {
-        cout << "Please set the current user first" << endl;
-        return false;
-    }
 
     Post *post = getpostbyID(postID); // stores post
 
     if (post && post->getuser() == currentuser) // check
     {
-        Memory *newPost = new Memory(("post" + to_string(noposts + 1)).c_str(), body, Date::gettodaysdate(), currentuser, post);
+        Memory *newPost = new Memory(("post" + to_string(noposts + 1)).c_str(), line, Date::gettodaysdate(), currentuser, post);
         bool status = currentuser->AddPost(newPost);
 
         if (!status)
@@ -541,8 +502,8 @@ void SocialMediaApp::run(SocialMediaApp *app)
         " |Exit"};
 
     int commandIndex = 0;
-    string inputID, body;
-    Date newDate;
+    string inputID, line;
+    Date tempDate;
     bool exit = false;
 
     cout << "\n==========================================\n";
@@ -550,15 +511,15 @@ void SocialMediaApp::run(SocialMediaApp *app)
     cout << "==========================================\n";
 
     cout << "\n|Enter user ID to set as current user (e.g., u7): ";
-    getline(cin, inputID);
+    getline(cin, inputID); // u7
     cout << endl;
-    app->setcurrentuser(inputID.c_str());
+    app->setcurrentuser(inputID.c_str()); // set current user
     cout << endl;
     cout << "Enter current system date (dd mm yyyy): " << endl;
     int day, month, year;
     cout << "|Enter Date: ";
     cin >> day;
-    while (day > 31 || day < 0)
+    while (day > 31 || day < 0) // check for day
     {
         cout << "|Enter Date: ";
         cin >> day;
@@ -566,24 +527,24 @@ void SocialMediaApp::run(SocialMediaApp *app)
 
     cout << "|Enter Month: ";
     cin >> month;
-    while (month > 12 || month < 0)
+    while (month > 12 || month < 0) // check for month
     {
         cout << "|Enter Month: ";
         cin >> month;
     }
     cout << "|Enter Year: ";
     cin >> year;
-    while (year > 2025 || year < 1999)
+    while (year > 2025 || year < 1999) // check for year
     {
         cout << "|Enter Year: ";
         cin >> year;
     }
     cin.ignore();
-    newDate = Date(day, month, year);
-    Date::settodaysdate(newDate);
+    tempDate = Date(day, month, year);
+    Date::settodaysdate(tempDate); // setting date
     cout << endl;
     cout << "System Date set to: ";
-    newDate.Print();
+    tempDate.Print();
     cout << endl;
 
     cout << "\n==========================================\n";
@@ -594,89 +555,81 @@ void SocialMediaApp::run(SocialMediaApp *app)
     }
     cout << "==========================================\n";
 
-    while (!exit)
+    while (!exit) // for the loop
     {
         cout << "\n==========================================\n";
         cout << "Enter your choice (1-" << noOfCommands << "): ";
         cin >> commandIndex;
-        while (commandIndex < 0 || commandIndex > 11)
+        while (commandIndex < 0 || commandIndex > 12) // check
         {
             cout << "Enter again:" << endl;
             cin >> commandIndex;
         }
-
         cin.ignore();
-
         commandIndex -= 1;
-
-        if (commandIndex < 0 || commandIndex >= noOfCommands)
-        {
-            cout << "Invalid command. Please try again." << endl;
-            continue;
-        }
 
         switch (commandIndex)
         {
-        case 0:
+        case 0: // view homw
             app->ViewHome();
             break;
-        case 1:
+        case 1: // view timeline
             app->ViewTimeline();
             break;
-        case 2:
+        case 2: // view post
             cout << "Enter post ID to view (e.g., post8): ";
             getline(cin, inputID);
             app->ViewPost(inputID.c_str());
             break;
-        case 3:
-            app->ViewFriendList();
+        case 3: // view friend list
+            app->ViewfriendLlist();
             break;
-        case 4:
+        case 4: // view liked pages
             app->Viewlikedpageslist();
             break;
-        case 5:
+        case 5: // view post liked list
             cout << "Enter post ID to view its liked list (e.g., post8): ";
             getline(cin, inputID);
-            app->ViewPostLikedList(inputID.c_str());
+            app->Viewpostlikedlist(inputID.c_str());
             break;
-        case 6:
+        case 6: // print memories
             app->PrintMemories();
             break;
-        case 7:
+        case 7: // view page
             cout << "Enter page ID to view (e.g., p2): ";
             getline(cin, inputID);
             app->ViewPage(inputID.c_str());
             break;
-        case 8:
+        case 8: // like a post
             cout << "Enter post ID to like (e.g., post8): ";
             getline(cin, inputID);
             app->likepost(inputID.c_str());
             cout << "Post has been Liked." << endl;
 
             break;
-        case 9:
+        case 9: // post a comment
             cout << "Enter post ID to comment on (e.g., p2): ";
             getline(cin, inputID);
             cout << "Enter your comment: ";
-            getline(cin, body);
-            app->PostComment(inputID.c_str(), body.c_str());
+            getline(cin, line);
+            app->PostComment(inputID.c_str(), line.c_str());
             cout << "Comment has been Posted." << endl;
 
             break;
-        case 10:
+        case 10: // share memory
             cout << "Enter post ID to share as a memory (e.g., post8): ";
             getline(cin, inputID);
             cout << "Enter memory content: ";
-            getline(cin, body);
-            app->ShareMemory(inputID.c_str(), body.c_str());
+            getline(cin, line);
+            app->ShareMemory(inputID.c_str(), line.c_str());
             cout << "Memory has been Shared." << endl;
             break;
-        case 11:
+        case 11: // exist
             cout << "Exiting program." << endl;
             exit = true;
             break;
         default:
-            cout << "Invalid command. Please try again." << endl;
+            cout << "Error." << endl;
             break;
         }
     }
